@@ -1,16 +1,9 @@
 # mobile_canteen
 
-A new Flutter project.
+Mobile Canteen is a Flutter application which aims to make food delivery around CMU effective and effient.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+In order to run or simulate this app, you need Flutter ready on your machine with the necessary environment for either IOS or Android.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+If you are using IOS simulator, run `open -a Simulator` to start the IOS simulator, then run `flutter run` to get start.

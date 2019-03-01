@@ -14,6 +14,12 @@ class MyApp extends StatelessWidget {
       ),
       home: MenuPanel(),
       // home: DishDetailPanel(new MenuObject('Mapo Tofu', 'For Sihan', 'assets/fish.jpeg'))
+      // home: new NumberPicker.integer(
+      //         initialValue: 1,
+      //         minValue: 1,
+      //         maxValue: 10,
+      //         onChanged: (newValue) => print(newValue),
+      //       )
     );
   }
 }

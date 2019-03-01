@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './menu.dart';
 import './menu_item.dart';
 import './bottom_bar.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 class MenuPanel extends StatefulWidget {
   @override

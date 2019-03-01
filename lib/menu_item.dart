@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import './menu.dart';
+import './dish_detail.dart';
 
 class MenuItem extends StatelessWidget {
   final MenuObject _menu;
 
   MenuItem(this._menu);
+
+  void navigateToItem(BuildContext context) {}
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +38,25 @@ class MenuItem extends StatelessWidget {
           ),
           subtitle: Row(
             children: <Widget>[
-              Text(
-                _menu.description,
+              Container(
+                width: 200.0,
+                child: Text(
+                  _menu.description,
+                ),
               )
             ],
           ),
-          trailing:
-              Icon(Icons.keyboard_arrow_right, color: Colors.blue, size: 30.0),
+          trailing: IconButton(
+            icon: Icon(Icons.keyboard_arrow_right,
+                color: Colors.blue, size: 30.0),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DishDetailPanel(_menu)));
+            },
+          ),
+          // Icon(Icons.keyboard_arrow_right, color: Colors.blue, size: 30.0),
         ),
       ),
     );

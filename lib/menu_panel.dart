@@ -15,11 +15,30 @@ class _MenuPanelState extends State<MenuPanel> {
 
   @override
   void initState() {
-    _menus.add(new MenuObject('Chinese Style Pork Rib', "Chef Wang's special",
-        'assets/pork_rib.jpeg'));
-    _menus.add(new MenuObject('Rib-Eye', "For Sihan", 'assets/beef.jpeg'));
     _menus.add(new MenuObject(
-        'Chinese Style Fish', "You said it tastes good", 'assets/fish.jpeg'));
+        'Chinese Style Pork Rib',
+        "Chef Wang's special",
+        'assets/pork_rib.jpeg',
+        'Tofu, Vegatable Oil, Chinese Leek',
+        10,
+        'Little Asia',
+        'Delivering'));
+    _menus.add(new MenuObject(
+        'Rib-Eye',
+        "Special cooked medium rare rib-eye",
+        'assets/beef.jpeg',
+        'Butter, Rib-Eye, Vegatable Oil, Onion',
+        5,
+        'Union Grill',
+        'Open for order'));
+    _menus.add(new MenuObject(
+        'Chinese Style Fish', 
+        "Chinese style fish cooked with soy sauce", 
+        'assets/fish.jpeg',
+        'Fish, Soy Sauce, Pepper, Sugar',
+        3,
+        'Sichuan Gourmet',
+        'Out of order'));
     super.initState();
   }
 
@@ -30,7 +49,9 @@ class _MenuPanelState extends State<MenuPanel> {
       appBar: AppBar(
         title: Text("Today's Menu"),
       ),
-      body: SingleChildScrollView(child: Column(children: _menus.map((each) => MenuItem(each)).toList()),),
+      body: SingleChildScrollView(
+        child: Column(children: _menus.map((each) => MenuItem(each)).toList()),
+      ),
       bottomNavigationBar: BottomBar(),
     );
   }

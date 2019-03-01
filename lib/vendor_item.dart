@@ -1,14 +1,34 @@
 import 'package:flutter/material.dart';
+import './vendor.dart';
 import './menu.dart';
-import './dish_detail.dart';
-import './vendor_item.dart';
+import './vendor_detail.dart';
 
-class MenuItem extends StatelessWidget {
-  final MenuObject _menu;
+class VendorItem extends StatelessWidget {
+  final VendorObject _vendor;
 
-  MenuItem(this._menu);
+  VendorItem(this._vendor);
 
   void navigateToItem(BuildContext context) {}
+
+  String getDishStatus(List<MenuObject> menus) {
+    bool isAvaliable = true;
+    for (MenuObject menu in menus) {
+      if (menu.status != 'Open for order') {
+        isAvaliable = false;
+      }
+    }
+    if (isAvaliable) {
+      return "Available";
+    }
+    return "Not available";
+  }
+
+  static TextStyle getTextStyle(String status) {
+    if (status == 'Available') {
+      return TextStyle(color: Colors.green);
+    }
+    return TextStyle(color: Colors.red);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +48,13 @@ class MenuItem extends StatelessWidget {
               ),
             ),
             child: Image.asset(
-              _menu.imgUrl,
+              _vendor.imgUrl,
               width: 50.0,
               height: 50.0,
             ),
           ),
           title: Text(
-            _menu.name,
+            _vendor.name,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Row(
@@ -42,8 +62,8 @@ class MenuItem extends StatelessWidget {
               Container(
                 width: 200.0,
                 child: Text(
-                  _menu.status,
-                  style: VendorItem.getTextStyle(_menu.status == 'Open for order' ? 'Available' : 'Not Available'),
+                  getDishStatus(_vendor.todayOffering),
+                  style: getTextStyle(getDishStatus(_vendor.todayOffering)),
                 ),
               )
             ],
@@ -55,7 +75,7 @@ class MenuItem extends StatelessWidget {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => DishDetailPanel(_menu)));
+                      builder: (context) => VendorDetail(_vendor)));
             },
           ),
           // Icon(Icons.keyboard_arrow_right, color: Colors.blue, size: 30.0),

@@ -18,13 +18,13 @@ class VendorItem extends StatelessWidget {
       }
     }
     if (isAvaliable) {
-      return "Available";
+      return "Open for order";
     }
-    return "Not available";
+    return "Not accepting orders";
   }
 
   static TextStyle getTextStyle(String status) {
-    if (status == 'Available') {
+    if (status == 'Open for order') {
       return TextStyle(color: Colors.green);
     }
     return TextStyle(color: Colors.red);

@@ -130,7 +130,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   Widget _showChoice() {
     return Container(
-      margin: EdgeInsets.only(top: 200.0),
+      margin: EdgeInsets.only(top: 300.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -240,8 +240,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         padding: EdgeInsets.fromLTRB(0.0, 70.0, 0.0, 0.0),
         child: CircleAvatar(
           backgroundColor: Colors.transparent,
-          radius: 48.0,
-          child: Image.asset('assets/flutter-icon.png'),
+          radius: 100.0,
+          child: Image.asset('assets/canteen.jpg', width: 300, height: 300,),
         ),
       ),
     );

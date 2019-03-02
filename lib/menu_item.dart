@@ -43,7 +43,7 @@ class MenuItem extends StatelessWidget {
                 width: 200.0,
                 child: Text(
                   _menu.status,
-                  style: VendorItem.getTextStyle(_menu.status == 'Open for order' ? 'Available' : 'Not Available'),
+                  style: VendorItem.getTextStyle(_menu.status == 'Open for order' ? 'Open for order' : 'Not Available'),
                 ),
               )
             ],

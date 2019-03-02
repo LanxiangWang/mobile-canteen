@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './menu_panel.dart';
+import './login.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,7 +13,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MenuPanel(),
+      // home: MenuPanel(),
+      home: LoginSignUpPage(),
       // home: DishDetailPanel(new MenuObject('Mapo Tofu', 'For Sihan', 'assets/fish.jpeg'))
       // home: new NumberPicker.integer(
       //         initialValue: 1,

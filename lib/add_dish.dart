@@ -127,7 +127,7 @@ class _AddDishPageState extends State<AddDishPage> {
                           final form = _formKey.currentState;
                           form.save();
                           print('name: $_name, description: $_description, quantity: $_quantity');
-                          MenuObject tmp = new MenuObject(_name, _description, _image, _ingredients, _quantity, 'Sichuan Gourmet', 'Open for order');
+                          MenuObject tmp = new MenuObject(_name, _description, _image, _ingredients, _quantity, _quantity, 'Sichuan Gourmet', 'Open for order');
                           widget.callback(tmp);
                           Navigator.pop(context);
                         },

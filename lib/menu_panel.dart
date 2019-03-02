@@ -26,6 +26,7 @@ class _MenuPanelState extends State<MenuPanel> {
         'assets/pork_rib.jpeg',
         'Tofu, Vegatable Oil, Chinese Leek',
         10,
+        20,
         'Little Asia',
         'Delivering');
     MenuObject steak = new MenuObject(
@@ -34,6 +35,7 @@ class _MenuPanelState extends State<MenuPanel> {
         'assets/beef.jpeg',
         'Butter, Rib-Eye, Vegatable Oil, Onion',
         5,
+        10,
         'Union Grill',
         'Open for order');
     MenuObject fish = new MenuObject(
@@ -41,6 +43,7 @@ class _MenuPanelState extends State<MenuPanel> {
         "Chinese style fish cooked with soy sauce",
         'assets/fish.jpeg',
         'Fish, Soy Sauce, Pepper, Sugar',
+        0,
         3,
         'Sichuan Gourmet',
         'Out of order');

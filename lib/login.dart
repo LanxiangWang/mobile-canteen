@@ -261,7 +261,10 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
               color: Colors.grey,
             )),
         validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
-        onSaved: (value) => _email = value,
+        onSaved: (value) {
+          _email = value;
+          print('_email is: $_email');
+        },
       ),
     );
   }

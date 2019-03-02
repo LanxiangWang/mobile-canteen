@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import './add_dish.dart';
+import './menu.dart';
+import './menu_item.dart';
 
 class VendorDeparture extends StatefulWidget {
   @override
@@ -8,12 +11,24 @@ class VendorDeparture extends StatefulWidget {
 }
 
 class _VendorDepartureState extends State<VendorDeparture> {
+  List<MenuObject> _list = [];
+
+  void updateList(MenuObject menu) {
+    setState(() {
+      _list.add(menu);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('test: $_list');
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print("hello");
+          Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AddDishPage(updateList)));
         },
         tooltip: 'Increment',
         child: Icon(Icons.add),
@@ -41,6 +56,12 @@ class _VendorDepartureState extends State<VendorDeparture> {
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                   )),
+            ),
+            Column(
+              children: _list.map((ele) => MenuItem(ele)).toList(),
+              // children: <Widget>[
+              //   Text('wuwuw'),
+              // ],
             ),
           ],
         ),

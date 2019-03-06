@@ -46,7 +46,7 @@ class _MenuPanelState extends State<MenuPanel> {
         0,
         3,
         'Sichuan Gourmet',
-        'Out of order');
+        'Out of stock');
 
     VendorObject gourmet = new VendorObject(
         'Sichuan Gourmet',
@@ -69,7 +69,7 @@ class _MenuPanelState extends State<MenuPanel> {
         '413 S Craig St, Pittsburgh, PA 15213',
         'assets/union_grill.png',
         4.0,
-        'description',
+        '413 S Craig St, Pittsburgh, PA',
         [steak]);
 
     _menus.add(pork);

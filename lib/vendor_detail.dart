@@ -48,27 +48,32 @@ class VendorDetail extends StatelessWidget {
                   Container(
                     decoration: BoxDecoration(color: Colors.blue),
                     child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 0.0),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
                       leading: Container(
-                        padding: EdgeInsets.only(right: 12.0),
-                        decoration: new BoxDecoration(
-                          border: new Border(
-                            right:
-                                new BorderSide(width: 1.0, color: Colors.blue),
+                          padding: EdgeInsets.only(right: 12.0),
+                          decoration: new BoxDecoration(
+                            border: new Border(
+                              right: new BorderSide(
+                                  width: 1.0, color: Colors.blue),
+                            ),
                           ),
-                        ),
-                        child: Icon(Icons.local_dining, color: Colors.white,)
-                      ),
+                          child: Icon(
+                            Icons.local_dining,
+                            color: Colors.white,
+                          )),
                       title: Text(
                         "Today's Offering",
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                       // Icon(Icons.keyboard_arrow_right, color: Colors.blue, size: 30.0),
                     ),
                   ),
                   Column(
-                    children: _vendor.todayOffering.map((each) => MenuItem(each)).toList(),
+                    children: _vendor.todayOffering
+                        .map((each) => MenuItem(each))
+                        .toList(),
                   ),
                   Card(
                     margin: EdgeInsets.only(top: 12.0),

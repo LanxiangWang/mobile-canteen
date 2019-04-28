@@ -122,7 +122,7 @@ class _MenuPanelState extends State<MenuPanel> {
           SingleChildScrollView(
             child: _isChosenDish
                 ? Column(
-                    children: _menus.map((each) => MenuItem(each)).toList())
+                    children: _menus.map((each) => MenuItem(each, false)).toList())
                 : Column(
                     children: _vendors.map((each) => VendorItem(each)).toList())
           ),

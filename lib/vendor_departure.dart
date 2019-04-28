@@ -126,7 +126,7 @@ class _VendorDepartureState extends State<VendorDeparture> {
                   )),
             ),
             Column(
-              children: _list.map((ele) => MenuItem(ele)).toList(),
+              children: _list.map((ele) => MenuItem(ele, false)).toList(),
               // children: <Widget>[
               //   Text('wuwuw'),
               // ],

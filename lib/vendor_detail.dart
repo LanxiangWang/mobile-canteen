@@ -72,7 +72,7 @@ class VendorDetail extends StatelessWidget {
                   ),
                   Column(
                     children: _vendor.todayOffering
-                        .map((each) => MenuItem(each))
+                        .map((each) => MenuItem(each, false))
                         .toList(),
                   ),
                   Card(

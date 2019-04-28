@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import './menu.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddDishPage extends StatefulWidget {
   final Function callback;
@@ -20,6 +25,50 @@ class _AddDishPageState extends State<AddDishPage> {
   num _price = 0;
   String _image = '';
   String _ingredients = '';
+
+
+  void _choosePic() async {
+    File _tmp = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (_tmp == null) {
+      print('file is null');
+      return;
+    }
+    String base64Image = base64Encode(_tmp.readAsBytesSync());
+    print('base64: $base64Image');
+    setState(() {
+      _image = base64Image;
+    });
+  }
+
+  void _addDish() async {
+    var url = 'http://192.168.0.15:5000/login/';
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String _token = prefs.getString('token');
+
+    print('found token: $_token');
+
+    if (_token == null) {
+      print('!!! No token was found!');
+      return;
+    }
+
+    // var response = await http.post(
+    //   url,
+    //   headers: {"Content-Type": "application/json"},
+    //   body: json.encode({
+    //     "name": _name,
+    //     "description": _description,
+    //     "quantity": _quantity,
+    //     "price": _price,
+    //     "image": _image,
+    //     "ingredients": _ingredients,
+    //     "token": _token
+    //   }),
+    // );
+
+    // var jsonBody = json.decode(response.body);
+    // var error = jsonBody['error_msg'];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,18 +150,11 @@ class _AddDishPageState extends State<AddDishPage> {
                     },
                     // keyboardType: TextInputType.,
                   ),
-                  new TextFormField(
-                    decoration: const InputDecoration(
-                      icon: const Icon(Icons.picture_in_picture),
-                      hintText: 'Upload image of the dish',
-                      labelText: 'Image',
-                    ),
-                    onSaved: (String input) {
-                      setState(() {
-                        _image = input;
-                      });
+                  new RaisedButton(
+                    onPressed: () {
+                      _choosePic();
                     },
-                    // keyboardType: TextInputType.,
+                    child: Text('Upload'),
                   ),
                   new Container(
                       padding: const EdgeInsets.only(left: 40.0, top: 20.0),
@@ -126,10 +168,13 @@ class _AddDishPageState extends State<AddDishPage> {
                           print('submit');
                           final form = _formKey.currentState;
                           form.save();
-                          print('name: $_name, description: $_description, quantity: $_quantity');
-                          MenuObject tmp = new MenuObject(_name, _description, _image, _ingredients, _quantity, _quantity, 'Sichuan Gourmet', 'Open for order');
-                          widget.callback(tmp);
-                          Navigator.pop(context);
+                          print('name: $_name, description: $_description, quantity: $_quantity, ingredients: $_ingredients, price: $_price, image: $_image');
+                          // MenuObject tmp = new MenuObject(_name, _description, _image, _ingredients, _quantity, _quantity, 'Sichuan Gourmet', 'Open for order');
+                          // widget.callback(tmp);
+                          // Navigator.pop(context);
+
+                          _addDish();
+
                         },
                       )),
                 ],

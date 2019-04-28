@@ -5,10 +5,57 @@ import './vendor_item.dart';
 
 class MenuItem extends StatelessWidget {
   final MenuObject _menu;
+  final bool _isForProfile;
 
-  MenuItem(this._menu);
+
+  MenuItem(this._menu, this._isForProfile);
+  
 
   void navigateToItem(BuildContext context) {}
+
+  Row getSubtitle() {
+    if (!_isForProfile) {
+      return Row(
+            children: <Widget>[
+              Container(
+                width: 200.0,
+                child: Text(
+                  _menu.status,
+                  style: VendorItem.getTextStyle(_menu.status == 'Open for order' ? 'Open for order' : 'Not Available'),
+                ),
+              )
+            ],
+          );
+    }
+
+    return Row(
+            children: <Widget>[
+              Container(
+                width: 200.0,
+                child: Text(
+                  'Quality: 1',
+                ),
+              )
+            ],
+          );
+  }
+
+  IconButton getTrailing(BuildContext context) {
+    if (!_isForProfile) {
+      return IconButton(
+            icon: Icon(Icons.keyboard_arrow_right,
+                color: Colors.blue, size: 30.0),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DishDetailPanel(_menu)));
+            },
+          );
+    }
+
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,27 +84,8 @@ class MenuItem extends StatelessWidget {
             _menu.name,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: Row(
-            children: <Widget>[
-              Container(
-                width: 200.0,
-                child: Text(
-                  _menu.status,
-                  style: VendorItem.getTextStyle(_menu.status == 'Open for order' ? 'Open for order' : 'Not Available'),
-                ),
-              )
-            ],
-          ),
-          trailing: IconButton(
-            icon: Icon(Icons.keyboard_arrow_right,
-                color: Colors.blue, size: 30.0),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DishDetailPanel(_menu)));
-            },
-          ),
+          subtitle: getSubtitle(),
+          trailing: getTrailing(context),
           // Icon(Icons.keyboard_arrow_right, color: Colors.blue, size: 30.0),
         ),
       ),

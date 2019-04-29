@@ -48,9 +48,9 @@ class VendorItem extends StatelessWidget {
               ),
             ),
             child: Image.asset(
-              _vendor.imgUrl,
-              width: 50.0,
-              height: 50.0,
+              'assets/sichuan_gourmet.png',
+              width: 60.0,
+              height: 60.0,
             ),
           ),
           title: Text(

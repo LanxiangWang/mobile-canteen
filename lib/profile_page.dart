@@ -3,6 +3,10 @@ import './bottom_bar.dart';
 import './modal.dart';
 import './menu.dart';
 import './menu_item.dart';
+import './profile_modify.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage();
@@ -26,18 +30,65 @@ TextStyle getCorrectStyle(String status) {
 class _ProfilePageState extends State<ProfilePage> {
   Modal modal = new Modal();
 
-  String userName;
-  String phoneNumber;
+  String _userName;
+  String _phoneNumber;
+  
+  void initState() {
+    super.initState();
+    print('fengmigntongxue: constructor executes');
 
-  MenuObject fish = new MenuObject(
-        'Chinese Style Fish',
-        "Chinese style fish cooked with soy sauce",
-        'assets/fish.jpeg',
-        'Fish, Soy Sauce, Pepper, Sugar',
-        0,
-        3,
-        'Sichuan Gourmet',
-        'Out of stock');
+    _initUpdate();
+  }
+
+  void _initUpdate() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+
+    if (token == null) {
+      print('No token was found');
+      return;      
+    }
+
+    var url = 'http://35.194.86.100:5000/customers/info?token=$token';
+    var response = await http.get(url);
+
+    var jsonBody = json.decode(response.body);
+
+    print('!!!, $jsonBody');
+
+    var error = jsonBody['error_msg'];
+    if (error == null) {
+      setState(() {
+        _userName = jsonBody["name"];
+        _phoneNumber = jsonBody["phone"];
+      });
+    }
+  }
+
+  void _changeCallback(userName, phoneNumber) {
+    if (userName != '') {
+      setState(() {
+        _userName = userName;
+      });
+    }
+
+    if (phoneNumber != '') {
+      setState(() {
+        _phoneNumber = phoneNumber;
+      });
+    }
+  }
+
+  // MenuObject fish = new MenuObject(
+  //       'Chinese Style Fish',
+  //       "Chinese style fish cooked with soy sauce",
+  //       'assets/fish.jpeg',
+  //       'Fish, Soy Sauce, Pepper, Sugar',
+  //       0,
+  //       3,
+  //       10,
+  //       'Sichuan Gourmet',
+  //       'Out of stock');
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +126,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                         title: Text(
-                          'Lanxinag Wang',
+                          _userName ?? 'undefined',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Row(
@@ -83,7 +134,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             Container(
                               width: 200.0,
                               child: Text(
-                                '979-739-8647'
+                                _phoneNumber ?? 'undefined'
                               ),
                             )
                           ],
@@ -92,17 +143,20 @@ class _ProfilePageState extends State<ProfilePage> {
                           icon: Icon(Icons.edit,
                               color: Colors.blue, size: 30.0),
                           onPressed: () {
-                            print('edit');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProfileModify(_userName, _phoneNumber, _changeCallback)));
                           },
                         ),
                       ),
                     ),
                   ),
-                  Text(
-                    'Open Order',
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                  ),
-                  MenuItem(fish, true),
+                  // Text(
+                  //   'Open Order',
+                  //   style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                  // ),
+                  // MenuItem(fish, true),
                 ],
               ),
             ),

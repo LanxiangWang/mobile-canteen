@@ -31,6 +31,39 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   bool _isIos;
   bool _isLoading;
 
+  @override
+  initState() {
+    print('init state executes');
+    super.initState();
+    _errorMessage = "";
+    _isLoading = false;
+    
+    _initLoginStatus();
+  }
+
+  void _initLoginStatus() async {
+    // get user's login status from local machine
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    String userName = prefs.getString('userName');
+    String type = prefs.getString('type');
+
+    if (token != null) {
+      // user has been logged in
+      if (type != 'customer') {
+        Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MenuPanel()));
+      } else {
+        Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => VendorDeparture()));      
+      }
+    }
+  }
+
   // Check if form is valid before perform login or signup
   bool _validateAndSave() {
     final form = _formKey.currentState;
@@ -51,15 +84,15 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     print('email is $userName');
   }
 
-  void _saveTokenAndUserName() async {
+  void _saveTokenAndUserName(String token) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', '306StartUpToken');
+    await prefs.setString('token', token);
     await prefs.setString('userName', _email);
   }
 
   // return token
   Future<String> _loginAuth(String phone, String password, String name) async {
-    var url = 'http://192.168.0.15:5000/login/';
+    var url = 'http://35.194.86.100:5000/login/';
     var response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
@@ -109,7 +142,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           // _testSharedPreference();
 
           // if login successfully
-          _saveTokenAndUserName();
+          _saveTokenAndUserName(token);
 
 
 
@@ -163,13 +196,6 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         });
       }
     }
-  }
-
-  @override
-  void initState() {
-    _errorMessage = "";
-    _isLoading = false;
-    super.initState();
   }
 
   void _changeFormToSignUp() {
@@ -251,7 +277,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   }
 
   Future<bool> _signUp(phone, username, password) async {
-    var url = 'http://192.168.0.15:5000/register/';
+    var url = 'http://35.194.86.100:5000/register/';
 
     
 

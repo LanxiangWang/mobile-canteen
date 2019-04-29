@@ -19,7 +19,7 @@ class VendorDetail extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   Card(
-                    child: Image.asset(_vendor.imgUrl),
+                    child: Image.asset('assets/sichuan_gourmet.png'),
                   ),
                   Card(
                     margin: EdgeInsets.only(bottom: 12.0),
@@ -30,7 +30,7 @@ class VendorDetail extends StatelessWidget {
                           contentPadding: EdgeInsets.symmetric(
                               horizontal: 20.0, vertical: 10.0),
                           title: Text(
-                            _vendor.description,
+                            _vendor.description ?? '',
                           ),
                           subtitle: Column(
                             children: <Widget>[
@@ -72,6 +72,7 @@ class VendorDetail extends StatelessWidget {
                   ),
                   Column(
                     children: _vendor.todayOffering
+                        .where((each) => each.vendor == _vendor.name)
                         .map((each) => MenuItem(each, false))
                         .toList(),
                   ),

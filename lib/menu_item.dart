@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './menu.dart';
 import './dish_detail.dart';
 import './vendor_item.dart';
+import 'dart:convert';
 
 class MenuItem extends StatelessWidget {
   final MenuObject _menu;
@@ -74,10 +75,10 @@ class MenuItem extends StatelessWidget {
                 right: new BorderSide(width: 1.0, color: Colors.blue),
               ),
             ),
-            child: Image.asset(
-              _menu.imgUrl,
-              width: 50.0,
-              height: 50.0,
+            child: Image.memory(
+              base64Decode(_menu.imgUrl),
+              width: 60.0,
+              height: 60.0,
             ),
           ),
           title: Text(

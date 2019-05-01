@@ -4,6 +4,7 @@ import './vendor_departure.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import './utils.dart' as utils;
 
 
 class LoginSignUpPage extends StatefulWidget {
@@ -92,7 +93,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   // return token
   Future<String> _loginAuth(String phone, String password, String name) async {
-    var url = 'http://35.194.86.100:5000/login/';
+    var url = 'http://${utils.host}/login/';
     var response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},

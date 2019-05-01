@@ -102,7 +102,7 @@ class _DishDetailPanelState extends State<DishDetailPanel> {
                     height: 50.0,
                     minWidth: 300.0,
                     child: Text("Order Now!"),
-                    onPressed: () => modal.mainBottomSheet(context),
+                    onPressed: () => modal.mainBottomSheet(context, widget._menu.dishId),
                     // onPressed: () => modal.mainBottomSheet(context),
                     color: Colors.green[300],
                   ),

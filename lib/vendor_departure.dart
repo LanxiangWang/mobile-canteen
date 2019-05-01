@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import './add_dish.dart';
 import './menu.dart';
 import './menu_item.dart';
+import './utils.dart' as utils;
+import 'package:shared_preferences/shared_preferences.dart';
+import './order_management.dart';
 
 class VendorDeparture extends StatefulWidget {
   @override
@@ -16,6 +19,37 @@ class _VendorDepartureState extends State<VendorDeparture> {
   List<MenuObject> _list = [];
   List<DataRow> _rows = [];
   DeliverStatus _deliverStatus = DeliverStatus.Prepare;
+  List<MenuObject> _todayMenus = [];
+
+  void initState() {
+    super.initState();
+
+    _initUpdate();
+  }
+
+  void _initUpdate() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+
+    String url = 'http://${utils.host}/vendors/menus?token=$token';
+    utils.sendRequest(url, 'GET', null).then((res) {
+      var jsonBody = utils.getJsonResponse(res);
+      var menus = jsonBody['Menu'];
+      for (var menu in menus) {
+        String image = menu['image_data'];
+        String name = menu['name'];
+        String ingredients = menu['ingredients'];
+        String description = menu['description'];
+        num dishId = menu['dish_id'];
+        MenuObject _tmp = new MenuObject(name, description, image, ingredients, 0, 0, 10, '', '', dishId);
+        setState(() {
+          _todayMenus.add(_tmp);  
+        });
+        
+      }
+
+    });
+  }
 
   void updateList(MenuObject menu) {
     setState(() {
@@ -126,7 +160,7 @@ class _VendorDepartureState extends State<VendorDeparture> {
                   )),
             ),
             Column(
-              children: _list.map((ele) => MenuItem(ele, false)).toList(),
+              children: _todayMenus.map((ele) => MenuItem(ele, true)).toList(),
               // children: <Widget>[
               //   Text('wuwuw'),
               // ],
@@ -134,7 +168,7 @@ class _VendorDepartureState extends State<VendorDeparture> {
             Center(
               child: Container(
                   // padding: EdgeInsets.only(right: 12.0),
-                  margin: EdgeInsets.only(top: 100),
+                  margin: EdgeInsets.only(top: 30),
                   width: 200,
                   decoration: new BoxDecoration(
                     border: new Border(
@@ -149,17 +183,17 @@ class _VendorDepartureState extends State<VendorDeparture> {
                     ),
                   )),
             ),
-            DataTable(
-              columns: <DataColumn>[
-                DataColumn(
-                  label: Text('Dishes'),
-                ),
-                DataColumn(
-                  label: Text('Reservation quantity'),
-                )
-              ],
-              rows: _rows,
-            ),
+            RaisedButton(
+            // padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.fromLTRB(60, 10, 60, 10),
+            textColor: Colors.white,
+            color: Colors.blue,
+            onPressed: () {
+              Navigator.push(context,
+                MaterialPageRoute(builder: (context) => OrderManagement()));
+            },
+            child: new Text("Check"),
+          ),
             InkWell(
               onTap: updateStatus,
               child: new Container(

@@ -7,6 +7,8 @@ import './profile_modify.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import './utils.dart' as utils;
+import './order_item.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage();
@@ -32,6 +34,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   String _userName;
   String _phoneNumber;
+  List<OrderItem> _openOrders = [];
+  List<OrderItem> _pastOrders = [];
   
   void initState() {
     super.initState();
@@ -48,14 +52,9 @@ class _ProfilePageState extends State<ProfilePage> {
       print('No token was found');
       return;      
     }
-
     var url = 'http://35.194.86.100:5000/customers/info?token=$token';
     var response = await http.get(url);
-
     var jsonBody = json.decode(response.body);
-
-    print('!!!, $jsonBody');
-
     var error = jsonBody['error_msg'];
     if (error == null) {
       setState(() {
@@ -63,6 +62,34 @@ class _ProfilePageState extends State<ProfilePage> {
         _phoneNumber = jsonBody["phone"];
       });
     }
+
+
+    // order information
+    String getOrdersUrl = 'http://${utils.host}/customers/orders?token=$token';
+    utils.sendRequest(getOrdersUrl, 'GET', null).then((res) {
+      var jsonBody = utils.getJsonResponse(res);
+      if (jsonBody['error_msg'] == null) {
+        var orders = jsonBody['Orders'];
+        var currOrders = orders['curr'];
+        var pastOrders = orders['past'];
+
+        for (var order in currOrders) {
+          var _tmp = OrderItem(order);
+
+          setState(() {
+            _openOrders.add(_tmp);
+          });
+        }
+
+        for (var order in pastOrders) {
+          var _tmp = OrderItem(order);
+
+          setState(() {
+            _pastOrders.add(_tmp);
+          });
+        }
+      }
+    });
   }
 
   void _changeCallback(userName, phoneNumber) {
@@ -78,17 +105,6 @@ class _ProfilePageState extends State<ProfilePage> {
       });
     }
   }
-
-  // MenuObject fish = new MenuObject(
-  //       'Chinese Style Fish',
-  //       "Chinese style fish cooked with soy sauce",
-  //       'assets/fish.jpeg',
-  //       'Fish, Soy Sauce, Pepper, Sugar',
-  //       0,
-  //       3,
-  //       10,
-  //       'Sichuan Gourmet',
-  //       'Out of stock');
 
   @override
   Widget build(BuildContext context) {
@@ -152,10 +168,29 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   ),
-                  // Text(
-                  //   'Open Order',
-                  //   style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                  // ),
+                  Container(
+                    margin: EdgeInsets.only(top: 20),
+                    child: Text(
+                      'Open Orders',
+                      style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    child: Column(
+                      children: _openOrders ?? [])
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 20),
+                    child: Text(
+                      'History Orders',
+                      style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    child: Column(
+                      children: _pastOrders ?? [])
+                  ),
+                  
                   // MenuItem(fish, true),
                 ],
               ),

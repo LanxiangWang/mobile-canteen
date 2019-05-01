@@ -51,7 +51,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
     if (token != null) {
       // user has been logged in
-      if (type != 'customer') {
+      if (type == 'customer') {
         Navigator.push(
               context,
               MaterialPageRoute(

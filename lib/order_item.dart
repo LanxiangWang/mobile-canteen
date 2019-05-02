@@ -9,6 +9,44 @@ class OrderItem extends StatelessWidget {
 
   OrderItem(this.order);
 
+  List<Widget> _getSubtitles() {
+
+    List<Widget> _list = [];
+    _list.add(
+      Container(
+        width: 300.0,
+        child: Text(
+          'quantity: ${order['quantity'].toString()}',
+        ),
+      )
+    );
+
+    _list.add(
+      Container(
+        width: 300.0,
+        child: Text(
+          'vendor: ${order['vendor_name']}',
+        ),
+      )
+    );
+
+    if (order['status'] == 'Not yet') {
+      // open orders, showing location
+      String _location = order['location'] ?? 'Not Available';
+
+      _list.add(
+        Container(
+          width: 300.0,
+          child: Text(
+            'location: $_location',
+          ),
+        )
+      );
+    }
+
+    return _list;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -35,20 +73,7 @@ class OrderItem extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Column(
-                  children: <Widget>[
-                    Container(
-                      width: 300.0,
-                      child: Text(
-                        'quantity: ${order['quantity'].toString()}',
-                      ),
-                    ),
-                    Container(
-                      width: 300.0,
-                      child: Text(
-                        order['vendor_name'],
-                      ),
-                    )
-                  ],
+                  children: _getSubtitles(),
                 ),
                 // trailing: getTrailing(context),
                 // Icon(Icons.keyboard_arrow_right, color: Colors.blue, size: 30.0),

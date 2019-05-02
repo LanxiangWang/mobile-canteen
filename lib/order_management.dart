@@ -19,30 +19,39 @@ class _OrderManagementState extends State<OrderManagement> {
   void initState() {
     super.initState();
 
+
+    print('*** init');
     _initUpdate();
   }
 
-  void _initUpdate() async {
+  Future<void> _initUpdate() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
 
-    String url = 'http://${utils.host}/vendors/orders?token=$token';
-    utils.sendRequest(url, 'GET', null).then((res) {
-      var jsonBody = utils.getJsonResponse(res);
-      var orders = jsonBody['Orders'];
-      for (var order in orders) {
-        if (order['status'] == 'picked up') {
-          continue;
-        }
-        PickUpItem _tmp = new PickUpItem(order, deleteItem);
-
-        setState(() {
-          _list.add(_tmp);  
-        });
-        
-      }
-
+    
+    setState(() {
+      print('1');
+      _list = [];
     });
+
+    String url = 'http://${utils.host}/vendors/orders?token=$token';
+    var res = await utils.sendRequest(url, 'GET', null);
+
+    var jsonBody = utils.getJsonResponse(res);
+    var orders = jsonBody['Orders'];
+    for (var order in orders) {
+      if (order['status'] == 'picked up') {
+        continue;
+      }
+      PickUpItem _tmp = new PickUpItem(order, deleteItem);
+
+      setState(() {
+        print('2');
+        _list.add(_tmp);
+      });
+    }
+
+    print('done');
   }
 
   void deleteItem(num orderId) {
@@ -76,11 +85,16 @@ class _OrderManagementState extends State<OrderManagement> {
       appBar: AppBar(
         title: Text("Order Management"),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: _list,
+      body: RefreshIndicator(
+          child: ListView(
+            children: <Widget>[
+              Column(
+                children: _list,
+              ),
+            ]
+          ),
+          onRefresh: _initUpdate,
         ),
-      ),
     );
   }
 }

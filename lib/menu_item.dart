@@ -14,9 +14,9 @@ class MenuItem extends StatelessWidget {
 
   void navigateToItem(BuildContext context) {}
 
-  Row getSubtitle() {
+  Column getSubtitle() {
     if (!_isForProfile) {
-      return Row(
+      return Column(
             children: <Widget>[
               Container(
                 width: 200.0,
@@ -29,12 +29,18 @@ class MenuItem extends StatelessWidget {
           );
     }
 
-    return Row(
+    return Column(
             children: <Widget>[
               Container(
-                width: 200.0,
+                width: 300.0,
                 child: Text(
-                  'Quality: 1',
+                  'total supply: ${_menu.total}',
+                ),
+              ),
+              Container(
+                width: 300.0,
+                child: Text(
+                  'remaining: ${_menu.remain}',
                 ),
               )
             ],

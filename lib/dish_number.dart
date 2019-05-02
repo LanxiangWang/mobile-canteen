@@ -12,6 +12,14 @@ class DishNumber extends StatefulWidget {
 class _DishNumberState extends State<DishNumber> {
   int _currentValue = 1;
 
+  void initState() {
+    super.initState();
+
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setInt('amount', 1);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return NumberPicker.integer(

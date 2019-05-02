@@ -91,7 +91,7 @@ class _ProfileModifyState extends State<ProfileModify> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Add Dish"),
+        title: new Text("Modify Information"),
       ),
       body: new SafeArea(
           top: false,

@@ -89,6 +89,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token);
     await prefs.setString('userName', _email);
+    if (_isCustomer) {
+      await prefs.setString('type', 'customer');
+    } else {
+      await prefs.setString('type', 'vendor');
+    }
   }
 
   // return token
@@ -361,6 +366,29 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     
   }
 
+  List<Widget> _showInputs() {
+    if (_formMode == FormMode.LOGIN) {
+      return [
+        _showLogo(),
+        _showEmailInput(),
+        _showPasswordInput(),
+        _showPrimaryButton(),
+        _showSecondaryButton(),
+        _showErrorMessage(),
+      ];
+    } else {
+      return [
+        _showLogo(),
+        _showEmailInput(),
+        _showNameInput(),
+        _showPasswordInput(),
+        _showPrimaryButton(),
+        _showSecondaryButton(),
+        _showErrorMessage(),
+      ];
+    }
+  }
+
   Widget _showBody() {
     return new Container(
         padding: EdgeInsets.all(16.0),
@@ -368,16 +396,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           key: _formKey,
           child: new ListView(
             shrinkWrap: true,
-            children: <Widget>[
-              _showLogo(),
-              _showEmailInput(),
-              _showNameInput(),
-              _showPasswordInput(),
-
-              _showPrimaryButton(),
-              _showSecondaryButton(),
-              _showErrorMessage(),
-            ],
+            children: _showInputs(),
           ),
         ));
   }

@@ -44,9 +44,14 @@ class _ProfilePageState extends State<ProfilePage> {
     _initUpdate();
   }
 
-  void _initUpdate() async {
+  Future<void> _initUpdate() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+
+    setState(() {
+      _openOrders = [];
+      _pastOrders = [];
+    });
 
     if (token == null) {
       print('No token was found');
@@ -112,89 +117,91 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: Text("Profile"),
       ),
-      body: Builder(
-        builder: (context) => SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Text(
-                    'User Information',
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                  ),
-                  Card(
-                    elevation: 8.0,
-                    margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-                    child: Container(
-                      decoration: BoxDecoration(color: Colors.white70),
-                      child: ListTile(
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                        leading: Container(
-                          padding: EdgeInsets.only(right: 12.0),
-                          decoration: new BoxDecoration(
-                            border: new Border(
-                              right: new BorderSide(width: 1.0, color: Colors.blue),
-                            ),
-                          ),
-                          child: Image.asset(
-                            'assets/beef.jpeg',
-                            width: 50.0,
-                            height: 50.0,
-                          ),
-                        ),
-                        title: Text(
-                          _userName ?? 'undefined',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Row(
-                          children: <Widget>[
-                            Container(
-                              width: 200.0,
-                              child: Text(
-                                _phoneNumber ?? 'undefined'
+      body: RefreshIndicator(
+        child: Builder(
+          builder: (context) => SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                      'User Information',
+                      style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                    ),
+                    Card(
+                      elevation: 8.0,
+                      margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                      child: Container(
+                        decoration: BoxDecoration(color: Colors.white70),
+                        child: ListTile(
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                          leading: Container(
+                            padding: EdgeInsets.only(right: 12.0),
+                            decoration: new BoxDecoration(
+                              border: new Border(
+                                right: new BorderSide(width: 1.0, color: Colors.blue),
                               ),
+                            ),
+                            child: Icon(
+                              Icons.person,
+                              color: Colors.blue, size: 30.0,
                             )
-                          ],
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.edit,
-                              color: Colors.blue, size: 30.0),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ProfileModify(_userName, _phoneNumber, _changeCallback)));
-                          },
+                          ),
+                          title: Text(
+                            _userName ?? 'undefined',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Row(
+                            children: <Widget>[
+                              Container(
+                                width: 200.0,
+                                child: Text(
+                                  _phoneNumber ?? 'undefined'
+                                ),
+                              )
+                            ],
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(Icons.edit,
+                                color: Colors.blue, size: 30.0),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProfileModify(_userName, _phoneNumber, _changeCallback)));
+                            },
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    child: Text(
-                      'Open Orders',
-                      style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                    Container(
+                      margin: EdgeInsets.only(top: 20),
+                      child: Text(
+                        'Open Orders',
+                        style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                  SingleChildScrollView(
-                    child: Column(
-                      children: _openOrders ?? [])
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    child: Text(
-                      'History Orders',
-                      style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                    SingleChildScrollView(
+                      child: Column(
+                        children: _openOrders ?? [])
                     ),
-                  ),
-                  SingleChildScrollView(
-                    child: Column(
-                      children: _pastOrders ?? [])
-                  ),
-                  
-                  // MenuItem(fish, true),
-                ],
+                    Container(
+                      margin: EdgeInsets.only(top: 20),
+                      child: Text(
+                        'History Orders',
+                        style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      child: Column(
+                        children: _pastOrders ?? [])
+                    ),
+                    
+                    // MenuItem(fish, true),
+                  ],
+                ),
               ),
-            ),
+        ),
+        onRefresh: _initUpdate,
       ),
       bottomNavigationBar: BottomBar(),
     );

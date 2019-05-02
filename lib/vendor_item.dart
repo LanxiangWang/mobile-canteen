@@ -11,20 +11,20 @@ class VendorItem extends StatelessWidget {
   void navigateToItem(BuildContext context) {}
 
   String getDishStatus(List<MenuObject> menus) {
-    bool isAvaliable = true;
+    bool isAvaliable = false;
     for (MenuObject menu in menus) {
-      if (menu.status != 'Open for order') {
-        isAvaliable = false;
+      if (menu.status == 'Open for order') {
+        isAvaliable = true;
       }
     }
     if (isAvaliable) {
-      return "Available";
+      return "Open for order";
     }
-    return "Not available";
+    return "Not accepting orders";
   }
 
   static TextStyle getTextStyle(String status) {
-    if (status == 'Available') {
+    if (status == 'Open for order') {
       return TextStyle(color: Colors.green);
     }
     return TextStyle(color: Colors.red);
@@ -47,10 +47,9 @@ class VendorItem extends StatelessWidget {
                 right: new BorderSide(width: 1.0, color: Colors.blue),
               ),
             ),
-            child: Image.asset(
-              _vendor.imgUrl,
-              width: 50.0,
-              height: 50.0,
+            child: Icon(
+              Icons.restaurant,
+              color: Colors.blue, size: 30.0
             ),
           ),
           title: Text(

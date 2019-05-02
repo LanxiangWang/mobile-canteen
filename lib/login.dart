@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import './menu_panel.dart';
 import './vendor_departure.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import './utils.dart' as utils;
+
 
 class LoginSignUpPage extends StatefulWidget {
   LoginSignUpPage({this.onSignedIn});
@@ -18,6 +23,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   String _email;
   String _password;
+  String _name;
   String _errorMessage;
   bool _isCustomer = true;
 
@@ -25,6 +31,39 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   FormMode _formMode = FormMode.LOGIN;
   bool _isIos;
   bool _isLoading;
+
+  @override
+  initState() {
+    print('init state executes');
+    super.initState();
+    _errorMessage = "";
+    _isLoading = false;
+    
+    _initLoginStatus();
+  }
+
+  void _initLoginStatus() async {
+    // get user's login status from local machine
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    String userName = prefs.getString('userName');
+    String type = prefs.getString('type');
+
+    if (token != null) {
+      // user has been logged in
+      if (type == 'customer') {
+        Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MenuPanel()));
+      } else {
+        Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => VendorDeparture()));      
+      }
+    }
+  }
 
   // Check if form is valid before perform login or signup
   bool _validateAndSave() {
@@ -38,6 +77,49 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     return false;
   }
 
+  void _testSharedPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    String userName = prefs.getString('userName');
+    print('token is $token');
+    print('email is $userName');
+  }
+
+  void _saveTokenAndUserName(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', token);
+    await prefs.setString('userName', _email);
+    if (_isCustomer) {
+      await prefs.setString('type', 'customer');
+    } else {
+      await prefs.setString('type', 'vendor');
+    }
+  }
+
+  // return token
+  Future<String> _loginAuth(String phone, String password, String name) async {
+    var url = 'http://${utils.host}/login/';
+    var response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: json.encode({
+        "phone": phone,
+        "name": name,
+        "type": _isCustomer ? 'customer' : 'vendor',
+        "password": password
+      }),
+    );
+
+    var jsonBody = json.decode(response.body);
+    var error = jsonBody['error_msg'];
+    if (error == null) {
+      var token = jsonBody['token'];
+      return Future(() => token);
+    }
+
+    return Future(() => "");
+  }
+
   // Perform login or signup
   void _validateAndSubmit() async {
     setState(() {
@@ -45,11 +127,32 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       // _isLoading = true;
     });
     if (_validateAndSave()) {
-      String userId = "";
+      String token = "";
       try {
         if (_formMode == FormMode.LOGIN) {
           // userId = await widget.auth.signIn(_email, _password);
           // print('Signed in: $userId');
+
+          token = await _loginAuth(_email, _password, _name);
+
+
+          // if login failed
+          if (token == "") {
+            setState(() {
+              _errorMessage = "Invalid username or password";
+            });
+
+            return;
+          }
+
+          // _testSharedPreference();
+
+          // if login successfully
+          _saveTokenAndUserName(token);
+
+
+
+
           if (_isCustomer) {
             Navigator.push(
                   context,
@@ -64,18 +167,30 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         } else {
           // userId = await widget.auth.signUp(_email, _password);
           // widget.auth.sendEmailVerification();
-          _showVerifyEmailSentDialog();
-          print('Signed up user: $userId');
-        }
-        setState(() {
-          _isLoading = false;
-        });
 
-        if (userId.length > 0 &&
-            userId != null &&
-            _formMode == FormMode.LOGIN) {
-          widget.onSignedIn();
+          // String url = '';
+          // var response = await http.post(url, body: {
+          //   'email': _email,
+          //   'password': _password
+          // });
+
+          // print('response is: $response');
+
+
+
+
+          _showVerifyEmailSentDialog();
+          
         }
+        // setState(() {
+        //   _isLoading = false;
+        // });
+
+        // if (userId.length > 0 &&
+        //     userId != null &&
+        //     _formMode == FormMode.LOGIN) {
+        //   widget.onSignedIn();
+        // }
       } catch (e) {
         print('Error: $e');
         setState(() {
@@ -87,13 +202,6 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         });
       }
     }
-  }
-
-  @override
-  void initState() {
-    _errorMessage = "";
-    _isLoading = false;
-    super.initState();
   }
 
   void _changeFormToSignUp() {
@@ -130,7 +238,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   Widget _showChoice() {
     return Container(
-      margin: EdgeInsets.only(top: 200.0),
+      margin: EdgeInsets.only(top: 300.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -174,27 +282,111 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     );
   }
 
-  void _showVerifyEmailSentDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text("Verify your account"),
-          content:
-              new Text("Link to verify account has been sent to your email"),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("Dismiss"),
-              onPressed: () {
-                _changeFormToLogin();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+  Future<bool> _signUp(phone, username, password) async {
+    var url = 'http://35.194.86.100:5000/register/';
+
+    
+
+    String type = _isCustomer ? 'customer' : 'vendor';
+
+    print('phone: $phone, name: $username, password: $password, type: $type');
+
+    var response = await http.post(
+      url, 
+      headers: {"Content-Type": "application/json"},
+      body: json.encode({
+        "phone": phone,
+        "name": username,
+        "type": type,
+        "password": password
+      }),
     );
+
+    var responseBody = json.decode(response.body)['error_msg'];
+    
+    
+    print('***$responseBody');
+    
+ 
+    if (responseBody == null) {
+      return Future(() => true);
+    }
+
+    return Future(() => false);
+
+  }
+
+  void _showVerifyEmailSentDialog() async {
+    
+    bool isSuccess = await _signUp(_email, _name, _password);
+
+    if (!isSuccess) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text("Sign up Failed"),
+            content:
+                new Text("The same phone number has been used"),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("OK"),
+                onPressed: () {
+                  _changeFormToLogin();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text("Congrats!"),
+            content:
+                new Text("Sign up successfully!"),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("OK"),
+                onPressed: () {
+                  _changeFormToLogin();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+    
+  }
+
+  List<Widget> _showInputs() {
+    if (_formMode == FormMode.LOGIN) {
+      return [
+        _showLogo(),
+        _showEmailInput(),
+        _showPasswordInput(),
+        _showPrimaryButton(),
+        _showSecondaryButton(),
+        _showErrorMessage(),
+      ];
+    } else {
+      return [
+        _showLogo(),
+        _showEmailInput(),
+        _showNameInput(),
+        _showPasswordInput(),
+        _showPrimaryButton(),
+        _showSecondaryButton(),
+        _showErrorMessage(),
+      ];
+    }
   }
 
   Widget _showBody() {
@@ -204,14 +396,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           key: _formKey,
           child: new ListView(
             shrinkWrap: true,
-            children: <Widget>[
-              _showLogo(),
-              _showEmailInput(),
-              _showPasswordInput(),
-              _showPrimaryButton(),
-              _showSecondaryButton(),
-              _showErrorMessage(),
-            ],
+            children: _showInputs(),
           ),
         ));
   }
@@ -240,9 +425,31 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         padding: EdgeInsets.fromLTRB(0.0, 70.0, 0.0, 0.0),
         child: CircleAvatar(
           backgroundColor: Colors.transparent,
-          radius: 48.0,
-          child: Image.asset('assets/flutter-icon.png'),
+          radius: 100.0,
+          child: Image.asset('assets/canteen.jpg', width: 300, height: 300,),
         ),
+      ),
+    );
+  }
+
+  Widget _showNameInput() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
+      child: new TextFormField(
+        maxLines: 1,
+        keyboardType: TextInputType.emailAddress,
+        autofocus: false,
+        decoration: new InputDecoration(
+            hintText: 'Name',
+            icon: new Icon(
+              Icons.person,
+              color: Colors.grey,
+            )),
+        validator: (value) => value.isEmpty ? 'Name can\'t be empty' : null,
+        onSaved: (value) {
+          _name = value;
+          print('Name is: $_name');
+        },
       ),
     );
   }
@@ -255,12 +462,12 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         keyboardType: TextInputType.emailAddress,
         autofocus: false,
         decoration: new InputDecoration(
-            hintText: 'Email',
+            hintText: 'Phone',
             icon: new Icon(
-              Icons.mail,
+              Icons.phone,
               color: Colors.grey,
             )),
-        validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
+        validator: (value) => value.isEmpty ? 'Phone can\'t be empty' : null,
         onSaved: (value) {
           _email = value;
           print('_email is: $_email');

@@ -1,74 +1,58 @@
 import 'package:flutter/material.dart';
-import './menu.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:image/image.dart' as Image;
 
-class AddDishPage extends StatefulWidget {
-  final Function callback;
+class ProfileModify extends StatefulWidget {
+  String userName;
+  String phoneNumber;
+  Function callback;
 
-  AddDishPage(this.callback);
+  ProfileModify(this.userName, this.phoneNumber, this.callback);
 
   @override
   State<StatefulWidget> createState() {
-    return _AddDishPageState();
+    return _ProfileModifyState();
   }
 }
 
-class _AddDishPageState extends State<AddDishPage> {
+class _ProfileModifyState extends State<ProfileModify> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   String _name = '';
-  String _description = '';
-  num _quantity = 0;
-  num _price = 0;
-  String _image = '';
-  String _ingredients = '';
+  String _phone = '';
+  String _password = '';
+  String _confirmPassword = '';
 
+  @override
+  void initState() {
+    super.initState();
 
-  void _choosePic() async {
-    File _tmp = await ImagePicker.pickImage(source: ImageSource.gallery);
-    Image.Image img = Image.decodeImage(_tmp.readAsBytesSync());
-    Image.Image thumbnail = Image.copyResize(img, 120);
-    if (_tmp == null) {
-      print('file is null');
-      return;
-    }
-    String base64Image = base64Encode(Image.encodePng(thumbnail));
-    // String base64Image = base64Encode(_tmp.readAsBytesSync());
-    int base64Length = base64Image.length;
-    print('base64: $base64Image');
-    print('base64Length: $base64Length');
-    setState(() {
-      _image = base64Image;
-    });
+    _name = widget.userName;
+    _phone = widget.phoneNumber;
   }
 
-  void _addDish() async {
-    var url = 'http://35.194.86.100:5000/menus/add/';
+  void _modifyInfo(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String _token = prefs.getString('token');
+    String token = prefs.getString('token');
 
-    print('found token: $_token');
-
-    if (_token == null) {
-      print('!!! No token was found!');
+    if (token == null) {
+      print('Token not found!');
       return;
     }
 
+    print('token is: $token');
+
+    String url = 'http://35.194.86.100:5000/customers/info';
     var response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
       body: json.encode({
         "name": _name,
-        "description": _description,
-        "quantity": _quantity,
-        "price": _price,
-        "image": _image,
-        "ingredients": _ingredients,
-        "token": _token
+        "phone": _phone,
+        "password": _password,
+        "token": token
       }),
     );
 
@@ -76,17 +60,38 @@ class _AddDishPageState extends State<AddDishPage> {
     var error = jsonBody['error_msg'];
 
     if (error == null) {
-      print('!!! success');
-    } else {
-      print('error: $error');
+      
+      // modify successfully
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text("Modify Successfully!"),
+            content:
+                new Text("Your information is safely saved on the cloud."),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("OK"),
+                onPressed: () {
+                  widget.callback(_name, _phone);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
   }
+  
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Add Dish"),
+        title: new Text("Modify Information"),
       ),
       body: new SafeArea(
           top: false,
@@ -103,70 +108,53 @@ class _AddDishPageState extends State<AddDishPage> {
                         _name = input;
                       });
                     },
-                    decoration: const InputDecoration(
-                      icon: const Icon(Icons.menu),
-                      hintText: 'Enter the name of the dish',
+                    decoration: InputDecoration(
+                      icon: const Icon(Icons.person),
+                      hintText: _name,
                       labelText: 'Name',
                     ),
                   ),
                   new TextFormField(
-                    decoration: const InputDecoration(
-                      icon: const Icon(Icons.note),
-                      hintText: 'Enter the description of the dish',
-                      labelText: 'Description',
+                    decoration: InputDecoration(
+                      icon: const Icon(Icons.phone),
+                      hintText: _phone,
+                      labelText: 'Phone',
                     ),
                     keyboardType: TextInputType.datetime,
                     onSaved: (String input) {
                       setState(() {
-                        _description = input;
+                        _phone = input;
                       });
                     },
                   ),
                   new TextFormField(
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       icon: const Icon(Icons.note),
-                      hintText: 'Enter the ingredients of the dish',
-                      labelText: 'Ingredients',
+                      hintText: '***********',
+                      labelText: 'Password',
                     ),
                     keyboardType: TextInputType.text,
                     onSaved: (String input) {
                       setState(() {
-                        _ingredients = input;
+                        _password = input;
                       });
                     },
                   ),
                   new TextFormField(
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.local_dining),
-                      hintText: 'Enter how many dishes would you provide',
-                      labelText: 'Quantity',
+                      hintText: '***********',
+                      labelText: 'Confirm Password',
                     ),
                     keyboardType: TextInputType.number,
                     onSaved: (String input) {
                       setState(() {
-                        _quantity = int.parse(input);
+                        _confirmPassword = input;
                       });
                     },
                     // inputFormatters: [
                     //   WhitelistingTextInputFormatter.digitsOnly,
                     // ],
-                  ),
-                  new TextFormField(
-                    decoration: const InputDecoration(
-                      icon: const Icon(Icons.attach_money),
-                      hintText: 'Enter the price of the dish',
-                      labelText: 'Price',
-                    ),
-                    onSaved: (String input) {
-                      _price = int.parse(input);
-                    },
-                    // keyboardType: TextInputType.,
-                  ),
-                  new RaisedButton(
-                    onPressed: () {
-                      _choosePic();
-                    },
-                    child: Text('Upload'),
                   ),
                   new Container(
                       padding: const EdgeInsets.only(left: 40.0, top: 20.0),
@@ -180,12 +168,12 @@ class _AddDishPageState extends State<AddDishPage> {
                           print('submit');
                           final form = _formKey.currentState;
                           form.save();
-                          print('name: $_name, description: $_description, quantity: $_quantity, ingredients: $_ingredients, price: $_price, image: $_image');
+                          // print('name: $_name, description: $_description, quantity: $_quantity, ingredients: $_ingredients, price: $_price, image: $_image');
                           // MenuObject tmp = new MenuObject(_name, _description, _image, _ingredients, _quantity, _quantity, 'Sichuan Gourmet', 'Open for order');
                           // widget.callback(tmp);
                           // Navigator.pop(context);
 
-                          _addDish();
+                          _modifyInfo(context);
 
                         },
                       )),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import './dish_number.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import './utils.dart' as utils;
 
 class Modal {
-  mainBottomSheet(BuildContext context) {
+  mainBottomSheet(BuildContext context, int dishId) {
     showBottomSheet(
         context: context,
         builder: (BuildContext context) {
@@ -22,13 +25,32 @@ class Modal {
                     textColor: Colors.white,
                     color: Colors.green,
                     onPressed: () {
-                      Navigator.pop(context);
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(title: Text("You have placed the order!"),);
-                        }
-                      );
+                      SharedPreferences.getInstance().then((prefs) {
+                        int amount = prefs.get('amount');
+                        String token = prefs.get('token');
+
+                        print('amount is: $amount');
+
+                        // send order request
+                        String url = 'http://${utils.host}/orders/add/';
+                        
+                        utils.sendRequest(url, 'POST', {
+                          'amount': amount,
+                          'dish_id': dishId,
+                          'token': token
+                        }).then((res) {
+                          var jsonBody = utils.getJsonResponse(res);
+                          if (jsonBody['error_msg'] == null) {
+                            Navigator.pop(context);
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(title: Text("You have placed $amount meals!"),);
+                              }
+                            );
+                          }
+                        });
+                      });
                     },
                     child: new Text("Order"),
                   ),

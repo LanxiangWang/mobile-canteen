@@ -19,7 +19,7 @@ class VendorDetail extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   Card(
-                    child: Image.asset(_vendor.imgUrl),
+                    child: Image.asset('assets/sichuan_gourmet.png'),
                   ),
                   Card(
                     margin: EdgeInsets.only(bottom: 12.0),
@@ -30,7 +30,7 @@ class VendorDetail extends StatelessWidget {
                           contentPadding: EdgeInsets.symmetric(
                               horizontal: 20.0, vertical: 10.0),
                           title: Text(
-                            _vendor.description,
+                            _vendor.description ?? '',
                           ),
                           subtitle: Column(
                             children: <Widget>[
@@ -48,27 +48,33 @@ class VendorDetail extends StatelessWidget {
                   Container(
                     decoration: BoxDecoration(color: Colors.blue),
                     child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 0.0),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
                       leading: Container(
-                        padding: EdgeInsets.only(right: 12.0),
-                        decoration: new BoxDecoration(
-                          border: new Border(
-                            right:
-                                new BorderSide(width: 1.0, color: Colors.blue),
+                          padding: EdgeInsets.only(right: 12.0),
+                          decoration: new BoxDecoration(
+                            border: new Border(
+                              right: new BorderSide(
+                                  width: 1.0, color: Colors.blue),
+                            ),
                           ),
-                        ),
-                        child: Icon(Icons.local_dining, color: Colors.white,)
-                      ),
+                          child: Icon(
+                            Icons.local_dining,
+                            color: Colors.white,
+                          )),
                       title: Text(
                         "Today's Offering",
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                       // Icon(Icons.keyboard_arrow_right, color: Colors.blue, size: 30.0),
                     ),
                   ),
                   Column(
-                    children: _vendor.todayOffering.map((each) => MenuItem(each)).toList(),
+                    children: _vendor.todayOffering
+                        .where((each) => each.vendor == _vendor.name)
+                        .map((each) => MenuItem(each, false))
+                        .toList(),
                   ),
                   Card(
                     margin: EdgeInsets.only(top: 12.0),

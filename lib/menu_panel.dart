@@ -4,6 +4,10 @@ import './menu_item.dart';
 import './bottom_bar.dart';
 import './vendor_item.dart';
 import './vendor.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import "package:pull_to_refresh/pull_to_refresh.dart";
 
 class MenuPanel extends StatefulWidget {
   @override
@@ -12,122 +16,127 @@ class MenuPanel extends StatefulWidget {
   }
 }
 
+
 class _MenuPanelState extends State<MenuPanel> {
   List<MenuObject> _menus = [];
   List<VendorObject> _vendors = [];
   bool _isChosenDish = true;
+  String _testByte;
 
   @override
   void initState() {
-    // mock data
-    MenuObject pork = new MenuObject(
-        'Chinese Style Pork Rib',
-        "Chef Wang's special",
-        'assets/pork_rib.jpeg',
-        'Tofu, Vegatable Oil, Chinese Leek',
-        10,
-        20,
-        'Little Asia',
-        'Delivering');
-    MenuObject steak = new MenuObject(
-        'Rib-Eye',
-        "Special cooked medium rare rib-eye",
-        'assets/beef.jpeg',
-        'Butter, Rib-Eye, Vegatable Oil, Onion',
-        5,
-        10,
-        'Union Grill',
-        'Open for order');
-    MenuObject fish = new MenuObject(
-        'Chinese Style Fish',
-        "Chinese style fish cooked with soy sauce",
-        'assets/fish.jpeg',
-        'Fish, Soy Sauce, Pepper, Sugar',
-        0,
-        3,
-        'Sichuan Gourmet',
-        'Out of order');
-
-    VendorObject gourmet = new VendorObject(
-        'Sichuan Gourmet',
-        '413 S Craig St, Pittsburgh, PA 15213',
-        'assets/sichuan_gourmet.png',
-        4.0,
-        'description',
-        [fish]);
-
-    VendorObject asia = new VendorObject(
-        'Little Aisa',
-        '413 S Craig St, Pittsburgh, PA 15213',
-        'assets/little_asia.png',
-        4.0,
-        'description',
-        [pork]);
-
-    VendorObject grill = new VendorObject(
-        'Union Grill',
-        '413 S Craig St, Pittsburgh, PA 15213',
-        'assets/union_grill.png',
-        4.0,
-        'description',
-        [steak]);
-
-    _menus.add(pork);
-    _menus.add(steak);
-    _menus.add(fish);
-
-    _vendors.add(gourmet);
-    _vendors.add(asia);
-    _vendors.add(grill);
-
     super.initState();
+
+    _updateState();
+  }
+
+  Future<void> _updateState() async {
+    print('update');
+
+    setState(() {
+      _menus = [];
+      _vendors = [];
+    });
+
+    var menuUrl = 'http://35.194.86.100:5000/menus/';
+    
+    var response = await http.get(menuUrl);
+    var jsonBody = json.decode(response.body);
+    var menus = jsonBody['Menu'];
+    for (var menu in menus) {
+      String name = menu['name'];
+      String description = menu['description'];
+      String image = menu['image_data'];
+      String ingredients = menu['ingredients'];
+      num price = menu['price'];
+      int amountLeft = menu['amount_left'];
+      int amount = menu['amount'];
+      String vendorName = menu['vendor_name'];
+      int dishId = menu['dish_id'];
+      
+      setState(() {
+        MenuObject temp = new MenuObject(name, description, image, ingredients, amountLeft, amount, price, vendorName, amountLeft > 0 ? 'Open for order' : 'Not available', dishId);
+        _menus.add(temp);
+      });
+      print('***, $name');
+    }
+    
+
+    var vendorUrl = 'http://35.194.86.100:5000/vendors/';
+    var responseVendor = await http.get(vendorUrl);
+    var jsonBodyVendor = json.decode(responseVendor.body);
+    var vendors = jsonBodyVendor['Menu'];
+    for (var vendor in vendors) {
+      String name = vendor['name'];
+      String description = vendor['description'];
+      String image = vendor['image'];
+      String location = vendor['location'];
+      String status = vendor['status'];
+      
+      setState(() {
+        VendorObject tmp = new VendorObject(name, location, image, 5.0, description, _menus);
+        _vendors.add(tmp);
+      });
+    }
+
+    return Future(() => print('updated!'));
+
   }
 
   @override
   Widget build(BuildContext context) {
+    
+
+
     // return Column(children: _menus.map((each) => MenuItem(each)).toList());
     return Scaffold(
       appBar: AppBar(
         title: Text("Today's Menu"),
       ),
-      body: Column(
-        children: <Widget>[
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new RaisedButton(
-                // padding: const EdgeInsets.all(8.0),
-                textColor: Colors.white,
-                color: _isChosenDish ? Colors.blue : Colors.grey,
-                onPressed: () {
-                  setState(() {
-                    _isChosenDish = true;
-                  });
-                },
-                child: new Text("Dishes"),
-              ),
-              new RaisedButton(
-                onPressed: () {
-                  setState(() {
-                    _isChosenDish = false;
-                  });
-                },
-                textColor: Colors.white,
-                color: _isChosenDish ? Colors.grey : Colors.blue,
-                // padding: const EdgeInsets.all(8.0),
-                child: new Text("Vendors"),
-              ),
-            ],
-          ),
-          SingleChildScrollView(
-            child: _isChosenDish
-                ? Column(
-                    children: _menus.map((each) => MenuItem(each)).toList())
-                : Column(
-                    children: _vendors.map((each) => VendorItem(each)).toList())
-          ),
-        ],
+      body: RefreshIndicator(
+        child: ListView(
+          children: <Widget>[
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new RaisedButton(
+                  // padding: const EdgeInsets.all(8.0),
+                  textColor: Colors.white,
+                  color: _isChosenDish ? Colors.blue : Colors.grey,
+                  onPressed: () {
+                    setState(() {
+                      _isChosenDish = true;
+                    });
+                  },
+                  child: new Text("Dishes"),
+                ),
+                new RaisedButton(
+                  onPressed: () {
+                    setState(() {
+                      _isChosenDish = false;
+                    });
+                  },
+                  textColor: Colors.white,
+                  color: _isChosenDish ? Colors.grey : Colors.blue,
+                  // padding: const EdgeInsets.all(8.0),
+                  child: new Text("Vendors"),
+                ),
+              ],
+            ),
+            SingleChildScrollView(
+              child: _isChosenDish
+                  ? Column(
+                      children: _menus.map((each) => MenuItem(each, false)).toList())
+                  : Column(
+                      children: _vendors.map((each) => VendorItem(each)).toList())
+            ),
+          ],
+        ),
+        onRefresh: _updateState,
       ),
+      
+      
+      
       bottomNavigationBar: BottomBar(),
     );
   }

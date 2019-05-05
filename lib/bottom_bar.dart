@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './profile_page.dart';
 
 class BottomBar extends StatelessWidget {
   @override
@@ -14,7 +15,12 @@ class BottomBar extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(Icons.account_box, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ProfilePage()));
+            },
           )
         ],),
       ),

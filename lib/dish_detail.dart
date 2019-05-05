@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './menu.dart';
 import './bottom_bar.dart';
 import './modal.dart';
+import 'dart:convert';
 
 class DishDetailPanel extends StatefulWidget {
   MenuObject _menu;
@@ -38,7 +39,7 @@ class _DishDetailPanelState extends State<DishDetailPanel> {
               child: Column(
                 children: <Widget>[
                   Card(
-                    child: Image.asset(widget._menu.imgUrl),
+                    child: Image.memory(base64Decode(widget._menu.imgUrl)),
                   ),
                   Card(
                     margin: EdgeInsets.only(bottom: 12.0),
@@ -101,7 +102,7 @@ class _DishDetailPanelState extends State<DishDetailPanel> {
                     height: 50.0,
                     minWidth: 300.0,
                     child: Text("Order Now!"),
-                    onPressed: () => modal.mainBottomSheet(context),
+                    onPressed: () => modal.mainBottomSheet(context, widget._menu.dishId),
                     // onPressed: () => modal.mainBottomSheet(context),
                     color: Colors.green[300],
                   ),

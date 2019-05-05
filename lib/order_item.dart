@@ -66,7 +66,8 @@ class OrderItem extends StatelessWidget {
                   ),
                   child: Icon(
                     Icons.fastfood,
-                    color: Colors.blue, size: 30.0),
+                    color: Colors.blue, size: 30.0
+                  ),
                 ),
                 title: Text(
                   order['dish_name'],

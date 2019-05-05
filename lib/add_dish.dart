@@ -115,7 +115,7 @@ class _AddDishPageState extends State<AddDishPage> {
                       hintText: 'Enter the description of the dish',
                       labelText: 'Description',
                     ),
-                    keyboardType: TextInputType.datetime,
+                    keyboardType: TextInputType.text,
                     onSaved: (String input) {
                       setState(() {
                         _description = input;
@@ -157,6 +157,7 @@ class _AddDishPageState extends State<AddDishPage> {
                       hintText: 'Enter the price of the dish',
                       labelText: 'Price',
                     ),
+                    keyboardType: TextInputType.number,
                     onSaved: (String input) {
                       _price = int.parse(input);
                     },
@@ -180,10 +181,10 @@ class _AddDishPageState extends State<AddDishPage> {
                           print('submit');
                           final form = _formKey.currentState;
                           form.save();
-                          print('name: $_name, description: $_description, quantity: $_quantity, ingredients: $_ingredients, price: $_price, image: $_image');
-                          // MenuObject tmp = new MenuObject(_name, _description, _image, _ingredients, _quantity, _quantity, 'Sichuan Gourmet', 'Open for order');
+                          // print('name: $_name, description: $_description, quantity: $_quantity, ingredients: $_ingredients, price: $_price, image: $_image');
+                          // MenuObject tmp = new MenuObject(_name, _description, _image, _ingredients, _quantity, _quantity, _price, 'vendor', 'status', 0);
                           // widget.callback(tmp);
-                          // Navigator.pop(context);
+                          Navigator.pop(context);
 
                           _addDish();
 

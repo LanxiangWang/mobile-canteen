@@ -238,7 +238,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   Widget _showChoice() {
     return Container(
-      margin: EdgeInsets.only(top: 300.0),
+      // margin: EdgeInsets.only(top: 300.0),
+      // padding: EdgeInsets.fromLTRB(0.0, 70.0, 0.0, 0.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[

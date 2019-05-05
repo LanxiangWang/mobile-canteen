@@ -28,9 +28,13 @@ class _VendorDepartureState extends State<VendorDeparture> {
     _initUpdate();
   }
 
-  void _initUpdate() async {
+  Future<void> _initUpdate() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
+
+    setState(() {
+      _todayMenus = [];
+    });
 
     String url = 'http://${utils.host}/vendors/menus?token=$token';
     utils.sendRequest(url, 'GET', null).then((res) {
@@ -179,110 +183,115 @@ class _VendorDepartureState extends State<VendorDeparture> {
       appBar: AppBar(
         title: Text("Today' Plan"),
       ),
-      body: SingleChildScrollView(
-        child: Column(
+      body: RefreshIndicator(
+        child: ListView(
           children: <Widget>[
-            Center(
-              child: Container(
-                  // padding: EdgeInsets.only(right: 12.0),
-                  margin: EdgeInsets.symmetric(),
-                  width: 200,
-                  decoration: new BoxDecoration(
-                    border: new Border(
-                      bottom: new BorderSide(width: 3.0, color: Colors.blue),
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Today's Menu",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
-                  )),
-            ),
             Column(
-              children: _todayMenus.map((ele) => MenuItem(ele, true)).toList(),
-              // children: <Widget>[
-              //   Text('wuwuw'),
-              // ],
-            ),
-            Center(
-              child: Container(
-                  // padding: EdgeInsets.only(right: 12.0),
-                  margin: EdgeInsets.fromLTRB(0, 30, 0, 0),
-                  width: 200,
-                  decoration: new BoxDecoration(
-                    border: new Border(
-                      bottom: new BorderSide(width: 3.0, color: Colors.blue),
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Order Management",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
-                  )),
-            ),
-            Container(
-              margin: EdgeInsets.only(bottom: 50),
-              child: RaisedButton(
-                padding: EdgeInsets.fromLTRB(60, 10, 60, 10),
-                textColor: Colors.white,
-                color: Colors.blue,
-                onPressed: () {
-                  Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => OrderManagement()));
-                },
-                child: new Text("Check"),
-              ),
-            ),
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  InkWell(
-                    onTap: updateStatus,
-                    child: new Container(
-                      width: 150.0,
-                      height: 150.0,
-                      decoration: new BoxDecoration(
-                        color: getColor(),
-                        border: new Border.all(color: Colors.white, width: 2.0),
-                        borderRadius: new BorderRadius.circular(100.0),
+            children: <Widget>[
+              Center(
+                child: Container(
+                    // padding: EdgeInsets.only(right: 12.0),
+                    margin: EdgeInsets.symmetric(),
+                    width: 200,
+                    decoration: new BoxDecoration(
+                      border: new Border(
+                        bottom: new BorderSide(width: 3.0, color: Colors.blue),
                       ),
-                      child: new Center(
-                        child: new Text(
-                          getCorrectDeliverText(),
-                          style: new TextStyle(fontSize: 24.0, color: Colors.white),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Today's Menu",
+                        style:
+                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                    )),
+              ),
+              Column(
+                children: _todayMenus.map((ele) => MenuItem(ele, true)).toList(),
+                // children: <Widget>[
+                //   Text('wuwuw'),
+                // ],
+              ),
+              Center(
+                child: Container(
+                    // padding: EdgeInsets.only(right: 12.0),
+                    margin: EdgeInsets.fromLTRB(0, 30, 0, 0),
+                    width: 200,
+                    decoration: new BoxDecoration(
+                      border: new Border(
+                        bottom: new BorderSide(width: 3.0, color: Colors.blue),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Order Management",
+                        style:
+                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                    )),
+              ),
+              Container(
+                margin: EdgeInsets.only(bottom: 50),
+                child: RaisedButton(
+                  padding: EdgeInsets.fromLTRB(60, 10, 60, 10),
+                  textColor: Colors.white,
+                  color: Colors.blue,
+                  onPressed: () {
+                    Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => OrderManagement()));
+                  },
+                  child: new Text("Check"),
+                ),
+              ),
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    InkWell(
+                      onTap: updateStatus,
+                      child: new Container(
+                        width: 150.0,
+                        height: 150.0,
+                        decoration: new BoxDecoration(
+                          color: getColor(),
+                          border: new Border.all(color: Colors.white, width: 2.0),
+                          borderRadius: new BorderRadius.circular(100.0),
+                        ),
+                        child: new Center(
+                          child: new Text(
+                            getCorrectDeliverText(),
+                            style: new TextStyle(fontSize: 24.0, color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  InkWell(
-                    onTap: _arrive,
-                    child: new Container(
-                      width: 150.0,
-                      height: 150.0,
-                      // margin: EdgeInsets.only(top: 100),
-                      decoration: new BoxDecoration(
-                        color: _deliverStatus == DeliverStatus.Prepare ? Colors.grey : Colors.orange,
-                        border: new Border.all(color: Colors.white, width: 2.0),
-                        borderRadius: new BorderRadius.circular(100.0),
-                      ),
-                      child: new Center(
-                        child: new Text(
-                          'Arrive',
-                          style: new TextStyle(fontSize: 24.0, color: Colors.white),
+                    InkWell(
+                      onTap: _arrive,
+                      child: new Container(
+                        width: 150.0,
+                        height: 150.0,
+                        // margin: EdgeInsets.only(top: 100),
+                        decoration: new BoxDecoration(
+                          color: _deliverStatus == DeliverStatus.Prepare ? Colors.grey : Colors.orange,
+                          border: new Border.all(color: Colors.white, width: 2.0),
+                          borderRadius: new BorderRadius.circular(100.0),
+                        ),
+                        child: new Center(
+                          child: new Text(
+                            'Arrive',
+                            style: new TextStyle(fontSize: 24.0, color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            )
+                  ],
+                ),
+              )
+            ],
+          )
           ],
         ),
+        onRefresh: _initUpdate,
       ),
     );
   }

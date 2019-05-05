@@ -153,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           subtitle: Row(
                             children: <Widget>[
                               Container(
-                                width: 200.0,
+                                width: 180.0,
                                 child: Text(
                                   _phoneNumber ?? 'undefined'
                                 ),

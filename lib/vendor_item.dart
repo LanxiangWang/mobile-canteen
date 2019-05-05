@@ -59,7 +59,7 @@ class VendorItem extends StatelessWidget {
           subtitle: Row(
             children: <Widget>[
               Container(
-                width: 200.0,
+                width: 180.0,
                 child: Text(
                   getDishStatus(_vendor.todayOffering),
                   style: getTextStyle(getDishStatus(_vendor.todayOffering)),

@@ -158,7 +158,7 @@ class _ProfileModifyState extends State<ProfileModify> {
                   ),
                   new Container(
                       padding: const EdgeInsets.only(left: 40.0, top: 20.0),
-                      child: new RaisedButton(
+                      child: RaisedButton(
                         child: const Text(
                           'Save',
                           style: TextStyle(color: Colors.white),
